@@ -76,3 +76,4 @@ void loop() {
   lcd.clear();
 }
 
+//This is just an example.
