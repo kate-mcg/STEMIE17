@@ -1,0 +1,76 @@
+
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(1, 2, 4, 5, 6, 7); // sets up lcd
+int counter = 0;
+
+// PIR Variables
+const int pirInputPin = 3;               // choose the input pin (for PIR sensor)
+int pirVal = 0;                    // variable for reading the pin status
+
+// Ultrasonic Sensor Variables
+const int trigPin = 9;
+const int echoPin = 10; // sets up sensor
+long duration;
+int distanceCm;
+bool within200cm;
+
+void setup() {
+  // Setup LCD
+  lcd.begin(16, 2); // specifys how high and wide the lcd is
+
+  // Setup PIR
+  pinMode(pirInputPin, INPUT);     // declare sensor as input
+
+  // Setup Ultrasonic Sensor
+  pinMode(trigPin, OUTPUT);// sets up echo pin as output
+  pinMode(echoPin, INPUT); // sets up echo pin as input
+  within200cm = false;
+
+  //Serial.begin(9600);
+
+}
+
+void loop() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distanceCm = duration * 0.034 / 2; // puts the time taken for the sound to come back it in cm
+
+  pirVal = digitalRead(pirInputPin);  // read input value
+  //Serial.println(pirVal);
+  
+  if ((distanceCm <= 200) and (pirVal = 1)) {
+    if (not within200cm) {
+      within200cm = true;
+      counter = counter + 1;
+    }
+    else {
+      within200cm = false;
+    }
+
+  }
+
+  lcd.clear();
+  lcd.setCursor(0, 0); // Sets the location at which the text will start be writen (on the top left)
+  lcd.print("Distance: "); // Prints Distance: on the LCD
+  lcd.print(distanceCm); // Prints the distance value from the senso
+  lcd.print (" cm") ; // puts the units on the lcd
+
+  lcd.setCursor(0, 1);
+  //if (pirVal = LOW) {
+  //  lcd.print("PIR: L ");
+  //}
+  //else {
+  //  lcd.print("PIR: H ");
+  //}
+  lcd.print("PIR: ");
+  lcd.print(pirVal);
+  lcd.print(" Count:  ");
+  lcd.print(counter);
+
+
+  delay(500);
+}
